@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<root>
+  <pessoa>
+    <nome>João</nome>
+    <idade>25</idade>
+  </pessoa>
+</root>

@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+<empresa>
+  <nome>TechMegaCorp</nome>
+  <departamentos>
+    <departamento id="D1" tipo="TI">
+      <nome>Desenvolvimento</nome>
+      <lider>
+        <nome>João Silva</nome>
+        <cargo>Gerente TI</cargo>
+        <email>joao.silva@tech.com</email>
+      </lider>
+      <funcionarios>
+        <funcionario matricula="F001">
+          <nome>Maria Oliveira</nome>
+          <cargo>Desenvolvedora Sênior</cargo>
+          <projetos>
+            <projeto codigo="P1">
+              <nome>Sistema ERP</nome>
+              <status>Ativo</status>
+              <dataInicio>2023-01-15</dataInicio>
+            </projeto>
+            <projeto codigo="P2">
+              <nome>App Mobile</nome>
+              <status>Concluído</status>
+              <dataInicio>2022-06-01</dataInicio>
+              <dataFim>2023-03-10</dataFim>
+            </projeto>
+          </projetos>
+        </funcionario>
+        <funcionario matricula="F002">
+          <nome>Pedro Santos</nome>
+          <cargo>Analista de Sistemas</cargo>
+          <projetos>
+            <projeto codigo="P3">
+              <nome>Integração API</nome>
+              <status>Em andamento</status>
+              <dataInicio>2024-02-01</dataInicio>
+            </projeto>
+          </projetos>
+        </funcionario>
+      </funcionarios>
+    </departamento>
+    <departamento id="D2" tipo="RH">
+      <nome>Recursos Humanos</nome>
+      <lider>
+        <nome>Ana Costa</nome>
+        <cargo>Coordenadora RH</cargo>
+        <email>ana.costa@tech.com</email>
+      </lider>
+      <funcionarios>
+        <funcionario matricula="F003">
+          <nome>Lucas Almeida</nome>
+          <cargo>Assistente RH</cargo>
+        </funcionario>
+      </funcionarios>
+    </departamento>
+  </departamentos>
+  <relatorios>
+    <relatorio ano="2023">
+      <titulo>Desempenho Anual</titulo>
+      <dados>
+        <item>Receita: 1.5M</item>
+        <item>Despesas: 900K</item>
+      </dados>
+    </relatorio>
+  </relatorios>
+</empresa>
