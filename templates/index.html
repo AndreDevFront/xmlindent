@@ -30,6 +30,22 @@
         button:hover {
             background-color: #45a049;
         }
+        .notification {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
     </style>
 </head>
 <body>
@@ -42,19 +58,60 @@
         <button type="submit">Enviar</button>
     </form>
     
+    <div id="downloadStarted" class="notification info" style="display: none;">
+        Download iniciado. Por favor, aguarde...
+    </div>
+    
+    <div id="downloadComplete" class="notification success" style="display: none;">
+        Download concluído com sucesso!
+    </div>
+    
     {% if download_link %}
         <h2>Seu XML arrumado está pronto!</h2>
         {% if formatted_xml %}
             <form id="download-form" action="{{ download_link }}" method="GET">
                 <input type="hidden" name="xml_content" value="{{ formatted_xml }}">
-                <button type="submit">Baixar XML Arrumado</button>
+                <button type="submit" id="downloadButton">Baixar XML Arrumado</button>
             </form>
         {% else %}
-            <a href="{{ download_link }}">
+            <a href="{{ download_link }}" id="downloadLink">
                 <button>Baixar XML Arrumado</button>
             </a>
         {% endif %}
         <p><a href="{{ url_for('index') }}">Voltar ao início</a></p>
+        
+        <script>
+            // Detectar quando o download é iniciado
+            document.addEventListener('DOMContentLoaded', function() {
+                const downloadForm = document.getElementById('download-form');
+                const downloadLink = document.getElementById('downloadLink');
+                const downloadStarted = document.getElementById('downloadStarted');
+                const downloadComplete = document.getElementById('downloadComplete');
+                
+                function showDownloadStarted() {
+                    downloadStarted.style.display = 'block';
+                    // Simular a conclusão do download após um tempo
+                    setTimeout(function() {
+                        downloadStarted.style.display = 'none';
+                        downloadComplete.style.display = 'block';
+                        // Ocultar a notificação de sucesso após 5 segundos
+                        setTimeout(function() {
+                            downloadComplete.style.display = 'none';
+                        }, 5000);
+                    }, 2000); // Tempo estimado para o download (ajuste conforme necessário)
+                }
+                
+                // Adicionar evento ao formulário de download
+                if (downloadForm) {
+                    downloadForm.addEventListener('submit', showDownloadStarted);
+                }
+                
+                // Adicionar evento ao link de download
+                if (downloadLink) {
+                    downloadLink.addEventListener('click', showDownloadStarted);
+                }
+            });
+        </script>
     {% endif %}
 </body>
 </html>
