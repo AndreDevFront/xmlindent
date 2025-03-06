@@ -1,40 +1,33 @@
-from flask import Flask, render_template, request, send_file
-from flask_wtf import FlaskForm
-from wtforms import FileField, SubmitField
-from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, send_file, redirect, url_for
 import xml.etree.ElementTree as ET
 from io import StringIO, BytesIO
 import xml.dom.minidom
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'minha-chave-secreta'
 
-# Formulário
-class UploadForm(FlaskForm):
-    xml_file = FileField('XML File')
-    submit = SubmitField('Enviar')
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-    form = UploadForm()
-    download_file_content = None
-    download_filename = None
+    return render_template('index.html', download_link=None)
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'xml_file' not in request.files:
+        return "Nenhum arquivo enviado!", 400
     
-    if form.validate_on_submit():
-        file = form.xml_file.data
-        if not file.filename.endswith('.xml'):
-            return "Por favor, envie um arquivo XML!", 400
-        
-        original_filename = secure_filename(file.filename)
-        
-        # Ler o XML diretamente do upload
-        try:
-            xml_content = file.read().decode('utf-8')
-            tree = ET.ElementTree(ET.fromstring(xml_content))
-        except ET.ParseError:
-            return "Arquivo XML inválido!", 400
-        
-        root = tree.getroot()
+    file = request.files['xml_file']
+    
+    if file.filename == '':
+        return "Nenhum arquivo selecionado!", 400
+    
+    if not file.filename.endswith('.xml'):
+        return "Por favor, envie um arquivo XML!", 400
+    
+    original_filename = file.filename
+    
+    try:
+        # Ler o conteúdo do arquivo diretamente da memória
+        xml_content = file.read().decode('utf-8')
+        root = ET.fromstring(xml_content)
         
         # Transformar em string sem formatação
         xml_string = StringIO()
@@ -45,20 +38,38 @@ def index():
         xml_prettified = xml.dom.minidom.parseString(xml_string.getvalue())
         formatted_xml = xml_prettified.toprettyxml(indent="  ")
         
-        # Preparar o arquivo para download na memória
-        download_filename = original_filename.replace('.xml', '_indentado.xml')
-        download_file_content = BytesIO(formatted_xml.encode('utf-8'))
-        download_file_content.seek(0)
+        # Armazenar em uma variável de sessão para download
+        formatted_filename = original_filename.replace('.xml', '_indentado.xml')
+        
+        # Em vez de salvar no sistema de arquivos, passamos uma flag para indicar que o download está pronto
+        return render_template('index.html', 
+                              download_link=f'/download/{formatted_filename}',
+                              formatted_xml=formatted_xml)
     
-    if download_file_content:
-        return send_file(
-            download_file_content,
-            as_attachment=True,
-            download_name=download_filename,
-            mimetype='application/xml'
-        )
+    except ET.ParseError:
+        return "Arquivo XML inválido!", 400
+    except Exception as e:
+        return f"Erro ao processar o arquivo: {str(e)}", 500
+
+@app.route('/download/<filename>')
+def download_file(filename):
+    # Recuperar o XML formatado da requisição anterior
+    formatted_xml = request.args.get('xml', '')
     
-    return render_template('index.html', form=form)
+    if not formatted_xml:
+        # Se não há XML formatado, usamos o da sessão (via query string)
+        formatted_xml = request.args.get('xml_content', '')
+    
+    # Preparar o arquivo para download diretamente na memória
+    mem_file = BytesIO(formatted_xml.encode('utf-8'))
+    mem_file.seek(0)
+    
+    return send_file(
+        mem_file,
+        as_attachment=True,
+        download_name=filename,
+        mimetype='application/xml'
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
