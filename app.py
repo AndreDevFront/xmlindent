@@ -54,5 +54,5 @@ def download_file(filename):
     formatted_filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     return send_file(formatted_filepath, as_attachment=True, download_name=filename)
 
-if __name__ == '__main__':
-    app.run()
+# if __name__ == '__main__':
+#     app.run()
