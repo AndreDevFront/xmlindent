@@ -57,13 +57,6 @@
         <p><a href="{{ url_for('index') }}">Voltar ao início</a></p>
     {% endif %}
     
-    {% if formatted_xml %}
-        <script>
-            // Submeter o formulário de download automaticamente
-            document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('download-form').submit();
-            });
-        </script>
-    {% endif %}
+    
 </body>
 </html>
